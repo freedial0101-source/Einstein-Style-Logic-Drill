@@ -1,0 +1,43 @@
+   table {
+            border-collapse: collapse; /* 枠線を一本にする */
+            margin: 20px auto;
+        }
+        td {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333; /* マス目の黒い線 */
+            text-align: center;
+            vertical-align: middle;
+            background-color: #fff; /* 初期の色（白） */
+            transition: background-color 0.3s; /* 色変更を滑らかにする */
+        }
+
+.type{
+    display:inline-block;
+}
+
+        .input-wide{
+            width: 600px;
+            margin:5px;
+            height:16px;
+            padding:0;
+        }
+        textarea{
+            width:500px;
+            margin:5px;
+            height:20px;
+            padding:0;
+        }
+        input, textarea {
+  /* 1. 計算方式を統一（heightにpaddingとborderを含める） */
+  box-sizing: border-box;
+  
+  /* 2. 縦の位置合わせを中央または上端に統一 */
+  vertical-align: middle; /* または top */
+}
+        div{
+            border: solid 3px red;
+        }
+        .none{
+            display:none;
+        }

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport">
+  <title>試作版 アインシュタインパズル</title>
+</head>
+
+<body>
+
+  <script>
+
+    const names = ["よしえ", "もえ", "さやか", "まこと"];
+    const creatures = ["玄武", "朱雀", "白虎", "青龍"];
+    const jewels = ["オパール", "トパーズ", "ルビー", "ダイヤ"];
+
+
+
+    //↓[a,b]から[[[a],[b]],[[b],[a]]]を作る
+    function getPermutations(arr) {
+      const results = [];
+
+      function permute(current, remaining) {
+        if (remaining.length === 0) {
+          results.push(current);
+          return;
+        }
+        for (let i = 0; i < remaining.length; i++) {
+          const nextCurrent = current.concat([[remaining[i]]]);
+          const nextRemaining = remaining.slice(0, i).concat(remaining.slice(i + 1));
+          permute(nextCurrent, nextRemaining);
+        }
+      }
+      
+      permute([], arr);
+      return results;
+    }
+
+    const namesP = getPermutations(names);
+    const creaturesP = getPermutations(creatures);
+    const jewelsP = getPermutations(jewels);
+
+    function conditionNP(arr1, arr2) {
+      return (arr1.findIndex(subArr => subArr[0] === "まこと") - arr2.findIndex(subArr => subArr[0] === "青龍") === 0)     // まことは青龍好き
+        && (Math.abs(arr1.findIndex(subArr => subArr[0] === "よしえ") - arr2.findIndex(subArr => subArr[0] === "玄武")) === 1);// よしえは玄武好きの隣
+    }
+
+
+
+    function conditionNPJ(arr1, arr2) {
+      return (arr1.findIndex(subArr => subArr[1] === "朱雀") - arr2.findIndex(subArr => subArr[0] === "オパール") === 1)      // 朱雀好きはオパールを買った人の右隣
+        && (Math.abs(arr1.findIndex(subArr => subArr[1] === "白虎") - arr2.findIndex(subArr => subArr[0] === "トパーズ")) === 3)// 白虎好きはトパーズを買った人の3つ隣
+        && (arr1.findIndex(subArr => subArr[0] === "もえ") - arr2.findIndex(subArr => subArr[0] === "ルビー") === 0)            // もえはルビーを買った
+        && (Math.abs(arr1.findIndex(subArr => subArr[0] === "さやか") - arr2.findIndex(subArr => subArr[0] === "ダイヤ")) === 3)// さやかはダイヤを買った人の3つ隣
+
+    }
+
+
+
+
+
+
+    function specialDP(arr1, arr2, callback) {
+      const resultArr = [];
+      for (let i = 0; i < arr1.length; i++) {
+        for (let j = 0; j < arr2.length; j++) {
+          if (callback(arr1[i], arr2[j])) {
+            const newArr = [[], [], [], []]; //　汎用性がある形に書き直す
+
+            for (let k = 0; k < arr1[i].length; k++) {
+
+              newArr[k].push(...arr1[i][k], arr2[j][k][0]);
+            }
+            resultArr.push(newArr);
+          }
+        }
+      }
+      return resultArr;
+    }
+
+    const secondArr = specialDP(namesP, creaturesP, conditionNP);
+    const thirdArr = specialDP(secondArr, jewelsP, conditionNPJ);
+
+    console.log(thirdArr);
+
+
+
+    const names2 = ["はなこ", "ようこ", "かよこ", "みちこ", "ゆきこ"];
+    const studys = ["音楽", "歴史", "数学", "英語", "古文"];
+    const countrys = ["パリ", "キャンベラ", "ダカール", "ソウル", "オタワ"];
+    const colors = ["黄", "緑", "青", "黒", "赤"];
+    const olds = ["20", "30", "40", "50", "60"];
+
+    function getPermutations(arr) {
+      const results = [];
+
+      function permute(current, remaining) {
+        if (remaining.length === 0) {
+          results.push(current);
+          return;
+        }
+        for (let i = 0; i < remaining.length; i++) {
+          const nextCurrent = current.concat([[remaining[i]]]);
+          const nextRemaining = remaining.slice(0, i).concat(remaining.slice(i + 1));
+          permute(nextCurrent, nextRemaining);
+        }
+      }
+      //↑[a,b]から[[[a],[b]],[[b],[a]]]を作る
+
+      permute([], arr);
+      return results;
+    }
+
+    function isConditionN2(arr) {
+      return ((arr.findIndex(subArr => subArr[0] === "ようこ") - arr.findIndex(subArr => subArr[0] === "かよこ")) > 0)
+        //ようこはかよこより右
+        && (arr.findIndex(subArr => subArr[0] === "ゆきこ") - arr.findIndex(subArr => subArr[0] === "みちこ") === 2);
+      // ゆきこはみちこの2つ右
+    };
+    function isConditionCl(arr) {
+      return arr.findIndex(subArr => subArr[0] === "黒") - arr.findIndex(subArr => subArr[0] === "赤") === 1;
+    };
+    // 黒は赤の右隣
+
+    function firstCondition(arr, callback) {
+      for (let i = arr.length - 1; i >= 0; i--) {
+        if (!callback(arr[i])) {
+          arr.splice(i, 1);
+        }
+      }
+      return arr;
+    };
+
+
+    const names2P = firstCondition(getPermutations(names2), isConditionN2);
+    const studysP = getPermutations(studys);
+    const countrysP = getPermutations(countrys);
+    const colorsP = firstCondition(getPermutations(colors), isConditionCl);
+    const oldsP = getPermutations(olds);
+
+    function isConditionN2S(arr1, arr2) {
+      return (arr1.findIndex(subArr => subArr[0] === "はなこ") - arr2.findIndex(subArr => subArr[0] === "歴史") === 0)//３はなこは歴史好き
+        && (Math.abs(arr1.findIndex(subArr => subArr[0] === "みちこ") - arr2.findIndex(subArr => subArr[0] === "英語")) === 3);//７みちこは英語好きの3つ隣   
+    };
+    function isConditionN2SCo(arr1, arr2) {
+      return (arr1.findIndex(subArr => subArr[0] === "かよこ") - arr2.findIndex(subArr => subArr[0] === "パリ") !== 0)//８かよこはパリ出身ではない
+        && (arr1.findIndex(subArr => subArr[1] === "古文") - arr2.findIndex(subArr => subArr[0] === "オタワ") === 0);//１２古文好きはオタワ出身
+    };
+    function isConditionN2SCoCl(arr1, arr2) {
+      return (arr1.findIndex(subArr => subArr[1] === "音楽") - arr2.findIndex(subArr => subArr[0] === "黄") === 0)//１音楽好きは黄の傘
+        && (arr1.findIndex(subArr => subArr[1] === "数学") - arr2.findIndex(subArr => subArr[0] === "緑") === -2);//６数学好きは緑の傘の人の２つ左
+    };
+    function isConditionN2CoClO(arr1, arr2) {
+      return (arr2.findIndex(subArr => subArr[0] === "50") - arr1.findIndex(subArr => subArr[2] === "パリ") === 0)//２50歳の人はパリ出身
+        && (arr1.findIndex(subArr => subArr[2] === "キャンベラ") - arr2.findIndex(subArr => subArr[0] === "30") === 3)//５キャンベラ出身は30歳の人の３つ右
+        && (arr1.findIndex(subArr => subArr[2] === "ダカール") - arr2.findIndex(subArr => subArr[0] === "20") === 1)//９ダカール出身は２０歳の右隣り
+        && (Math.abs(arr1.findIndex(subArr => subArr[3] === "青") - arr2.findIndex(subArr => subArr[0] === "60")) === 2)//10青の傘の人は60歳の人の2つ隣
+        && (arr2.findIndex(subArr => subArr[0] === "40") - arr1.findIndex(subArr => subArr[2] === "ソウル") === 1);//１１40歳の人はソウル出身の人の右隣
+    }
+
+    function specialDP2(arr1, arr2, callback) {
+      const resultArr = [];
+      for (let i = 0; i < arr1.length; i++) {
+        for (let j = 0; j < arr2.length; j++) {
+          if (callback(arr1[i], arr2[j])) {
+            const newArr = [[], [], [], [], []]; //　汎用性がある形に書き直す
+
+            for (let k = 0; k < arr1[i].length; k++) {
+              newArr[k].push(...arr1[i][k], arr2[j][k][0]);
+            }
+            resultArr.push(newArr);
+          }
+        }
+      }
+      return resultArr;
+    }
+
+    const doubleArr = specialDP2(names2P, studysP, isConditionN2S);
+    console.log(doubleArr.length);
+    const tripleArr = specialDP2(doubleArr, countrysP, isConditionN2SCo);
+    console.log(tripleArr.length);
+    const quadrupleArr = specialDP2(tripleArr, colorsP, isConditionN2SCoCl);
+    console.log(quadrupleArr.length);
+    const resultArr = specialDP2(quadrupleArr, oldsP, isConditionN2CoClO);
+    console.log(resultArr);
+
+
+  </script>
+</body>
+
+</html>
