@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プチアインシュタインパズル</title>
+  <link rel="stylesheet">
+</head>
+
+<body>
+  <script>
+    // サンプルデータ
+    const problem6Date = [
+      "名前、好きな伝説の生き物、買った宝石",
+
+      ["よしえ、もえ、さやか、まこと",
+        "玄武、朱雀、白虎、青龍",
+        "オパール、トパーズ、ルビー、ダイヤ"],
+
+      ["", "好き", "を買った人"],
+
+      [["よしえ", "玄武", [1, 2], [1, 2]],
+      ["朱雀", "オパール", [1, 2], [1, 1]],
+      ["白虎", "トパーズ", [3, 2], [1, 2]],
+      ["もえ", "ルビー", [0, 2], [2, 1]],
+      ["さやか", "ダイヤ", [3, 2], [1, 2]],
+      ["まこと", "青龍", [0, 2], [2, 1]]
+      ]
+    ];
+
+
+    
+
+    
+
+
+    // 条件を全て数字に直したものを代入すると、条件を判定する関数
+    const getLightChecker = (r, d, x, y) => {
+      return (0) ** (((x - y) ** d[1] + (-1) ** d[0] * r[0] ** d[1])) === Math.abs(Math.min(1, r[1]));
+    };
+   
+
+
+
+
+    const LightCheckers = [];
+
+
+
+
+
+
+
+
+    // 一次配列から各要素を１つだけもつ配列の全順列を作る    
+    function getPermutations(arr,
+      //callback
+    ) {
+      const results = [];
+
+      function permute(current, remaining) {
+        if (remaining.length === 0) {
+          results.push(current);
+          return;
+        }
+        for (let i = 0; i < remaining.length; i++) {
+          // if(callback()){
+          const nextCurrent = current.concat([[remaining[i]]]);
+          const nextRemaining = remaining.slice(0, i).concat(remaining.slice(i + 1));
+          permute(nextCurrent, nextRemaining);
+          // }else{
+          // continue;
+          // }
+        }
+      };
+      //↑[a,b]から[[[a],[b]],[[b],[a]]]を作る
+      permute([], arr);
+      return results;
+    }
+
+
+    //二次配列に含まれる語句は何番目にあるか
+    function searchIndex(arr, word) {
+      return arr.findIndex(x => x.includes(word));
+    };
+
+
+    // ミニテスト用
+    const testArr = [["a", "b"], ["c", "d"]];
+    const testN = testArr.findIndex(x => x.includes("c"));
+    console.log(testN);
+    console.log(searchIndex(testArr, "d"));
+    console.log(searchIndex(testArr, "x"));
+
+
+
+    const checkConditions = [];
+
+    for (let i = 0; i < problem6Date[3].length; i++) {
+
+      const checkCondition = (word1, word2, range, direction) => (arr1, arr2) => {
+
+        const position1 = Math.max(searchIndex(arr1, word1), searchIndex(arr2, word1));
+        const position2 = Math.max(searchIndex(arr1, word2), searchIndex(arr2, word2));
+        // typeof word2 == "number" ? word2 : 
+        // console.log(`i:${i},word1:${searchIndex(arr1, word1)}or${searchIndex(arr2,word1)},word2:${searchIndex(arr1, word2)}or${searchIndex(arr2,word2)}`)
+
+        if (Math.min(position1, position2) === -1) {
+          return true;
+        } else {
+          return getLightChecker(range, direction, position1, position2);
+        }
+      }
+      checkConditions.push(checkCondition(...problem6Date[3][i]));
+    }
+
+    function checkAll(arr1, arr2) {
+      return checkConditions.every(condtion => condtion(arr1, arr2));
+    }
+
+
+    console.log(`全条件数:${checkConditions.length}`);
+
+    const testarr1 = ["よしえ", "もえ", "まこと", "さやか"];
+    const testarr2 = ["白虎", "玄武", "青龍", "朱雀"];
+    const testarr3 = ["ダイヤ", "ルビー", "オパール", "トパーズ"];
+    const testarr6 = [["ダイヤ"], ["ルビー"], ["オパール"], ["トパーズ"]]
+    const testarr1fake = ["もえ", "よしえ", "まこと", "さやか"];
+    const testarr4 = [["よしえ", "白虎"], ["もえ", "玄武"], ["まこと", "青龍"], ["さやか", "朱雀"]];
+    const testarr4fake = [["よしえ", "玄武"], ["もえ", "白虎"], ["まこと", "青龍"], ["さやか", "朱雀"]];
+
+    console.log(`全てtrueならOK：${checkAll(testarr1, testarr2)},${checkAll(testarr2, testarr3)},${checkAll(testarr3, testarr1)}`);
+    console.log(`falseがあればOK：${checkAll(testarr1fake, testarr2)},${checkAll(testarr3, testarr1fake)}`);
+    console.log(`trueならOK:${checkAll(testarr4, testarr3)}`);
+    console.log(`falseならOk:${checkAll(testarr4fake, testarr3)}`);
+    console.log(typeof 1 == "number");
+
+    function mergeArrs(arr1, arr2) {
+      const result = [];
+      arr1.forEach((x, index) => result[index] = [...x, ...arr2[index]]);
+      return result;
+    };
+    // [["佐藤",2],["田中",4]]  ,  [["a"],["b"]]→[["佐藤",2,"a"],["田中",4,"b"]]
+
+    function makeProduction(arrP1, arrP2, checkCondition) {
+      const result = [];
+      arrP1.forEach((x, index1) => arrP2.forEach((y, index2) => {
+        if (checkCondition(x, y)) {
+          result.push(mergeArrs(x, y));
+        }
+      }))
+      return result
+    };
+
+    console.log(makeProduction([testarr4], [testarr6], checkAll));
+    console.log(makeProduction([testarr4fake], [testarr6], checkAll));
+
+
+    const testarr21 = [[1, 2], [3, 4]];
+    const testarr22 = [[10, 20], [30, 40]];
+    console.log(mergeArrs(testarr21, testarr22));
+
+
+
+    //     const featuresPMatrix0 = [];
+    //     problem6Date[1].forEach((x, index) => {
+    //       const y = x.split("、");
+    //       featuresPMatrix0[index] = getPermutations(y);
+
+    //     })
+
+    // console.log(featuresPMatrix0);
+
+    function getResult(problemDate) {
+      const featuresPMatrix = [];
+
+      problemDate[1].forEach((x, index) => {
+        const y = x.split("、");
+        featuresPMatrix[index] = getPermutations(y);
+      })
+      return featuresPMatrix.reduce((acc, cur) => acc !== 0 ? makeProduction(acc, cur, checkAll) : cur, 0);
+    };
+
+    // const result1 = makeProduction(featuresPMatrix[0],featuresPMatrix[1],checkAll);
+    // const result2 = makeProduction(result1,featuresPMatrix[2],checkAll);
+    // return result2;}
+    console.log(getResult(problem6Date));
+console.log(problem6Date);
+
+
+
+
+
+
+
+  </script>
+</body>
+
+</html>

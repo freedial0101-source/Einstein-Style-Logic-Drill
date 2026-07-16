@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アインシュタインパズル</title>
+    <link rel="stylesheet" href="Einstein's style logic drill.css">
+</head>
+
+<body>
+    <input type="submit" value="問題 6" id="problem6-submit">
+    <div>
+        <p>特徴の種類を書いてください。
+            <br>それぞれの語句の間は「、」で区切ってください
+            <br>(入力後は「Tab」を押すか、下の入力欄をクリック)
+        </p>
+        <input class="input-wide" id="types-input" placeholder="(例)名前、好きな木、出身地、買った家電">
+
+    </div>
+
+
+    <p>名前と特徴のリストを作ってください</p>
+    <div id="featureLists-div">
+
+    </div>
+    <input type="submit" value="特徴を記入しました" id="features-check">
+
+    <div>
+        <input type="submit" value="条件欄を増やす" id="add-condition">
+        <input type="submit" value="条件欄を減らす" id="remove-condition">
+        <ol id="conditions-div">
+
+        </ol>
+    </div>
+    <input type="submit" value="問題を解く" id="solution-getter">
+    <script>
+
+
+        //後で書き替えが容易な値
+        const maxHumansNum = 7;
+        const maxTypesNum = 6;
+        const maxConditionNum = 15;
+
+
+
+        //特徴の種類のinputの取得
+        const typesInput = document.getElementById("types-input");
+
+
+        // 特徴の種類のinputを参照して入力欄を作る
+        const featureWritingDivs = [];
+        const types = [];
+        const featuresInputs = [];
+        const featureListsDiv = document.querySelector("#featureLists-div");
+        const supplementInputs = [];
+
+        for (i = 0; i < maxTypesNum; i++) {
+
+            const featureWritingDiv = document.createElement("div");
+            featureListsDiv.appendChild(featureWritingDiv);
+            featureWritingDivs[i] = featureWritingDiv;
+
+            const type = document.createElement("p");
+            type.classList.add("type");
+            featureWritingDiv.appendChild(type);
+            types[i] = type;
+
+
+            const featuresInput = document.createElement("input");
+            featuresInput.classList.add("input-wide");
+            featureWritingDiv.appendChild(featuresInput);
+            featuresInputs[i] = featuresInput;
+
+            const supplementInput = document.createElement("input");
+            supplementInput.classList.add("supplement-input");
+            featureWritingDiv.appendChild(supplementInput);
+            supplementInputs[i] = supplementInput;
+        }
+
+
+
+        let typesArr = [];
+
+
+        typesInput.addEventListener("change", () => {
+            typesArr = typesInput.value.split("、");
+            if (typesArr.length > maxTypesNum) {
+                alert(`特徴の種類は${maxTypesNum}個までにしてください`);
+                return;
+            }
+            for (let i = 0; i < typesArr.length; i++) {
+                console.log("a" + types[i].textContent);
+                types[i].textContent = typesArr[i];
+
+
+            }
+            for (let i = 0; i < maxTypesNum; i++) {
+                if (i < typesArr.length) {
+                    featureWritingDivs[i].classList.remove("none");
+                } else {
+                    featureWritingDivs[i].classList.add("none");
+                }
+            }
+
+        });
+        let featuresMatrix = [];
+        const featuresCheck = document.querySelector("#features-check");
+
+        const conditionsDiv = document.querySelector("#conditions-div");
+        let conditionLis = [];
+        let select1s = [];
+        let select2s = [];
+        let supplement1s = [];
+        let supplement2s = [];
+        let ranges = [];
+        let directions = [];
+        let conditionNum = 4;
+        // ↑表示番号
+        let directionOptions = [];
+
+        for (let i = 0; i < maxConditionNum; i++) {
+
+            const li = document.createElement("li");
+            li.id = `li-${i}`;
+            if (i > conditionNum) {
+                li.classList.add("none");
+            }
+            conditionsDiv.appendChild(li);
+            conditionLis[i] = li;
+
+            const select1 = document.createElement("select");
+            select1.id = `select1-${i}`;
+            select1s[i] = select1;
+            li.appendChild(select1);
+
+            const supplement1 = document.createElement("span");
+            supplement1.id = `supplement1-${i}`;
+            supplement1.textContent = "は";
+            supplement1s[i] = supplement1;
+            li.appendChild(supplement1);
+
+            const select2 = document.createElement("select");
+            select2.id = `select2-${i}`;
+            select2s[i] = select2;
+            li.appendChild(select2);
+
+            const supplement2 = document.createElement("span");
+            supplement2.id = `supplement2-${i}`;
+            supplement2.textContent = "";
+            supplement2s[i] = supplement2;
+            li.appendChild(supplement2);
+
+            const range = document.createElement("select");
+            range.id = `range-${i}`;
+            ranges[i] = range;
+
+            li.appendChild(range);
+
+
+
+            const direction = document.createElement("select");
+            direction.id = `direction-${i}`;
+            directions[i] = direction;
+            li.appendChild(direction);
+
+            directionOptions[i] = [];
+            const option0 = document.createElement("option");
+            option0.value = "2,1";
+            option0.textContent = "";
+            direction.appendChild(option0);
+            directionOptions[i][0] = option0;
+
+            const option1 = document.createElement("option");
+            option1.value = "1,1";
+            option1.textContent = "右";
+            direction.appendChild(option1);
+            directionOptions[i][1] = option1;
+
+            const option2 = document.createElement("option");
+            option2.value = "0,1";
+            option2.textContent = "左";
+            direction.appendChild(option2);
+            directionOptions[i][2] = option2;
+
+            const option3 = document.createElement("option");
+            option3.value = "1,2";
+            option3.textContent = "隣";
+            direction.appendChild(option3);
+            directionOptions[i][3] = option3;
+        }
+
+
+        featuresCheck.addEventListener("click", () => {
+            featuresMatrix = [];
+            //一度リセットするためのもの
+
+            featuresInputs.forEach(x => {
+                if (x.value !== "undefined") { featuresMatrix.push(x.value.split("、")); }
+            }
+            )
+
+
+
+
+
+
+
+            select1s.forEach(a => {
+                a.innerHTML = "";
+                featuresMatrix.forEach(x => x.forEach(y => {
+                    const option = document.createElement("option");
+                    option.value = y;
+                    option.textContent = y;
+                    a.appendChild(option);
+                }))
+            });
+
+
+            select2s.forEach(a => {
+                a.innerHTML = "";
+                featuresMatrix.forEach(x => x.forEach(y => {
+                    const option = document.createElement("option");
+                    option.value = y;
+                    option.textContent = y;
+                    a.appendChild(option);
+                }))
+            });
+
+
+
+            ranges.forEach(x => {
+                x.innerHTML = "";
+
+                for (let i = 0; i < featuresMatrix[0].length; i++) {
+                    const option = document.createElement("option");
+                    option.value = `${i},2`;
+                    option.textContent = i === 0 ? "である" : `の${i}つ`;
+                    x.appendChild(option);
+                }
+
+                // x.insertAdjacentHTML("beforeend", "<option value=\"0,-Infinity\">より左</option>");
+                // x.insertAdjacentHTML("beforeend", "<option value=\"0,0\">より右</option>");
+            })
+        });
+
+
+        const addCondition = document.querySelector("#add-condition");
+        const removeCondition = document.querySelector("#remove-condition");
+
+        removeCondition.addEventListener("click", () => {
+            if (conditionNum > 0) {
+                conditionLis[conditionNum].classList.add("none");
+                conditionNum--;
+            }
+        });
+        addCondition.addEventListener("click", () => {
+            if (conditionNum < maxConditionNum) {
+                conditionNum++;
+                conditionLis[conditionNum].classList.remove("none");
+            }
+        });
+
+        select1s.forEach((x, index) => x.addEventListener("change", () => {
+            supplement1s[index].textContent = `${supplementInputs[featuresMatrix.findIndex(y => y.includes(x.value))].value}は`
+        }))
+
+        select2s.forEach((x, index) => x.addEventListener("change", () => {
+            supplement2s[index].textContent = `${supplementInputs[featuresMatrix.findIndex(y => y.includes(x.value))].value}の`
+        }))
+
+        const solutionGetter = document.querySelector("#solution-getter");
+
+
+
+
+
+
+
+
+
+
+        let trueDirectionValues = [];
+        let trueRangeValues = [];
+
+        function getPartsOfConditions() {
+
+           trueRangeValues = ranges.map(ele => ((ele.value).split(',')).map(Number));
+ trueDirectionValues = directions.map(ele => ((ele.value).split(',')).map(Number));
+
+            let partsOfConditions = [];
+            for (let i = 0; i <= conditionNum; i++) {
+                partsOfConditions[i] = [select1s[i].value, select2s[i].value, trueRangeValues[i], trueDirectionValues[i]];
+            }
+
+            partsOfConditions[5].forEach((x, index) => console.log(`${index}番目は${x}で、種類は${typeof x}`));
+            partsOfConditions[5][3].forEach((x, index) => console.log(`オブジェクトの中身その${index}は${x}で、種類は${typeof x}`));
+            return partsOfConditions;
+        }
+
+
+
+
+
+        const getLightChecker = (r, d, x, y) => {
+            return (0) ** (((x - y) ** d[1] + (-1) ** d[0] * r[0] ** d[1])) === Math.abs(Math.min(1, r[1]));
+        };
+        // 0**zの値はz=0なら0,z>0なら0,z<0ならInfiniteになるため、数値の代入だけで「>」や「<」の代わりが作れるので利用
+        // （より左、より右を表すのに利用）。
+        // r[0]は単に距離。
+        // d[1]=2なら、絶対値の代わりになるのを利用（隣を表すのに利用）。
+        // d[0]の偶奇でxとyのどちらが大きいかを表すのに利用（どちらが右にあるかを表すのに利用）。
+
+        console.log(0 ** ((3 - 3) ** 1 + (-1) ** 2 * 0 * 1) === Math.abs(Math.min(1, 2)));
+
+        const LightCheckers = [];
+
+
+        // 一次配列から各要素を１つだけもつ配列の全順列を作る([a,b]から[[[a],[b]],[[b],[a]]]を作る) 
+        function getPermutations(arr
+            //,callback
+        ) {
+            const results = [];
+
+            function permute(current, remaining) {
+                if (remaining.length === 0) {
+                    results.push(current);
+                    return;
+                }
+                for (let i = 0; i < remaining.length; i++) {
+                    // if(callback()){
+                    const nextCurrent = current.concat([[remaining[i]]]);
+                    const nextRemaining = remaining.slice(0, i).concat(remaining.slice(i + 1));
+                    permute(nextCurrent, nextRemaining);
+                    // }else{
+                    // continue;
+                    // }
+                }
+            };
+
+            permute([], arr);
+            return results;
+        }
+
+
+        //二次配列に含まれる語句は何番目にあるか
+        function searchIndex(arr, word) {
+            return arr.findIndex(x => x.includes(word));
+        }
+
+
+        // searchIndexを使って、問題データから2つの配列が条件を満たすか
+        const getCondition = (word1, word2, range, direction) => (arr1, arr2) => {
+
+            const position1 = Math.max(searchIndex(arr1, word1), searchIndex(arr2, word1));
+            const position2 = Math.max(searchIndex(arr1, word2), searchIndex(arr2, word2));
+            // typeof word2 == "number" ? word2 : 
+            // console.log(`i:${i},word1:${searchIndex(arr1, word1)}or${searchIndex(arr2,word1)},word2:${searchIndex(arr1, word2)}or${searchIndex(arr2,word2)}`)
+
+            if (Math.min(position1, position2) === -1) {
+                return true;
+            } else {
+                return getLightChecker(range, direction, position1, position2);
+            }
+        };
+
+        const getAllChecker = (conditionsArr) => (arr1, arr2) => {
+            return conditionsArr.every(condition => condition(arr1, arr2));
+        }
+
+        // [["佐藤",2],["田中",4]]  ,  [["a"],["b"]]   →   [["佐藤",2,"a"],["田中",4,"b"]]
+        function mergeArrs(arr1, arr2) {
+            const result = [];
+            arr1.forEach((x, index) => result[index] = [...x, ...arr2[index]]);
+            return result;
+        };
+
+        //直積集合の部分集合を作る
+        function makeProduction(arrP1, arrP2, checkCondition) {
+            const result = [];
+            console.log(checkCondition);
+
+            arrP1.forEach((x, index1) => arrP2.forEach((y, index2) => {
+                if (checkCondition(x, y)) {
+                    result.push(mergeArrs(x, y));
+                }
+            }))
+            return result
+        };
+
+        //すべての部分集合から条件が合うものを連結(答えを出す)
+        function getResult(problemDate, condition) {
+            const featuresPMatrix = [];
+
+            problemDate[1].forEach((x, index) => {
+
+                featuresPMatrix[index] = getPermutations(x);
+            })
+            console.log(featuresPMatrix);
+            //(1)の部分
+            return featuresPMatrix.reduce((acc, cur) => acc !== 0 ? makeProduction(acc, cur, condition) : cur, 0);
+        };
+
+
+        solutionGetter.addEventListener("click", () => {
+            const problemDate = [typesInput.value,
+                featuresMatrix,
+                "後で書くこと",
+                null,
+            ];
+            console.log("problemDate:"+problemDate);
+            const parts = getPartsOfConditions();
+            console.log("↓条件の部品");
+            console.log(parts);
+            const checkConditions = parts.map(cur => getCondition(...cur));
+            checkConditions.forEach((x, index) => console.log(`${index}番目:${x([["よしえ"], ["もえ"], ["まこと"], ["さやか"]], [["白虎"], ["玄武"], ["青龍"], ["朱雀"]])}`));
+            console.log(checkConditions);
+
+
+
+
+            const checkAll = getAllChecker(checkConditions);
+
+
+            const result = getResult(problemDate, checkAll);
+
+            console.log(`答え:${result}`);
+            const arr1 = [["よしえ"], ["もえ"], ["まこと"], ["さやか"]];
+            const arr2 = [["白虎"], ["玄武"], ["青龍"], ["朱雀"]];
+            const arr3 = [["ダイヤ"], ["ルビー"], ["オパール"], ["トパーズ"]];
+            checkConditions.forEach((x, index) => console.log(`条件${index}:答えの1,2段目で${x(arr1, arr2)}`));
+            checkConditions.forEach((x, index) => console.log(`条件${index}:答えの1,3段目で${x(arr1, arr3)}`));
+            checkConditions.forEach((x, index) => console.log(`条件${index}:答えの2,3段目で${x(arr2, arr3)}`));
+            console.log(searchIndex(arr1, "まこと"));
+            console.log(searchIndex(arr1, "青龍"));
+            console.log(searchIndex(arr2, "まこと"));
+            console.log(searchIndex(arr2, "青龍"));
+            console.log(trueDirectionValues[5], trueRangeValues[5]);
+
+            return result;
+        });
+
+
+        function writeCondition(arr) {
+            arr.forEach((x, index) => {
+                select1s[index].value = x[0];
+                select2s[index].value = x[1];
+                ranges[index].value = x[2];
+                directions[index].value = x[3];
+            })
+        }
+        //サンプルデータ 
+        const problem6Date = [
+            "名前、好きな伝説の生き物、買った宝石",
+            ["よしえ、もえ、さやか、まこと",
+                "玄武、朱雀、白虎、青龍",
+                "オパール、トパーズ、ルビー、ダイヤ"],
+            ["", "好き", "を買った人"],
+            [["よしえ", "玄武", "1,2", "1,2"],
+            ["朱雀", "オパール", "1,2", "1,1"],
+            ["白虎", "トパーズ", "3,2", "1,2"],
+            ["もえ", "ルビー", "0,2", "2,1"],
+            ["さやか", "ダイヤ", "3,2", "1,2"],
+            ["まこと", "青龍", "0,2", "2,1"]
+            ]
+        ];
+
+
+
+
+        const problem6Submit = document.querySelector("#problem6-submit");
+
+        problem6Submit.addEventListener("click", () => {
+            while (conditionNum < 5) {
+                addCondition.dispatchEvent(new Event("click"));
+            }
+            while (conditionNum > 5) {
+                removeCondition.dispatchEvent(new Event("click"));
+            }
+            typesInput.value = problem6Date[0];
+            featuresInputs.forEach((x, index) => x.value = problem6Date[1][index]);
+            supplementInputs.forEach((x, index) => x.value = problem6Date[2][index]);
+            typesInput.dispatchEvent(new Event("change"));
+            featuresCheck.dispatchEvent(new Event("click"));
+
+
+            writeCondition(problem6Date[3]);
+            select1s.forEach(x => x.dispatchEvent(new Event("change")));
+            select2s.forEach(x => x.dispatchEvent(new Event("change")));
+
+        });
+
+        problem6Submit.dispatchEvent(new Event("click"));
+        solutionGetter.dispatchEvent(new Event("click"));
+    </script>
+</body>
+
+</html>
