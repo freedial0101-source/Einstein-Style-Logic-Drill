@@ -323,8 +323,9 @@
         }))
 
         negativeBtns.forEach((x, index) => x.addEventListener("click", () => {
-            supplement3s[index].classList.toggle("none",truths===0)  ;
-            truths[index]=0? truths[index]++ : truths[index]--;
+            supplement3s[index].classList.toggle("none",truths[index]===0)  ;
+            truths[index]===0? truths[index]++ : truths[index]--;
+            console.log(truths[index]);
 }));
 
 
@@ -569,7 +570,7 @@
             supplementInputs.forEach((x, index) => x.value = problemData[2][index]);
             typesInput.dispatchEvent(new Event("change"));
             featuresCheck.dispatchEvent(new Event("click"));
-            problemData[3].forEach((x, index) => { if (x[4] === 0) { negativeBtns[index].dispatchEvent(new Event("click")); } });
+            
 
 
 
@@ -578,8 +579,8 @@
             select2s.forEach(x => x.dispatchEvent(new Event("change")));
             problemData[3].forEach((x,index)=>truths[index]=x[4]);
             console.log(problemData[3]);
-            // negativeBtns.forEach(x => x.dispatchEvent(new Event("click")));
-
+            negativeBtns.forEach(x => x.dispatchEvent(new Event("click")));
+            console.log(problemData[3]);
 
         }
 
@@ -607,12 +608,12 @@
                 "玄武、朱雀、白虎、青龍",
                 "オパール、トパーズ、ルビー、ダイヤ"],
             ["", "好き", "を買った人"],
-            [["よしえ", "玄武", "1,2", "1,2", 1],
-            ["朱雀", "オパール", "1,2", "1,1", 1],
-            ["白虎", "トパーズ", "3,2", "1,2", 1],
-            ["もえ", "ルビー", "0,2", "2,1", 1],
-            ["さやか", "ダイヤ", "3,2", "1,2", 1],
-            ["まこと", "青龍", "0,2", "2,1", 1]
+            [["よしえ", "玄武", "1,2", "1,2", 0],
+            ["朱雀", "オパール", "1,2", "1,1", 0],
+            ["白虎", "トパーズ", "3,2", "1,2", 0],
+            ["もえ", "ルビー", "0,2", "2,1", 0],
+            ["さやか", "ダイヤ", "3,2", "1,2", 0],
+            ["まこと", "青龍", "0,2", "2,1", 0]
             ]
         ];
         problemDates.xli = [
@@ -627,16 +628,16 @@
             ["", "好き", "を買った人", "を食べた人","の髪の人"],
 
             [
-                ["茶色", "緑", "0,-Infinity", "2,1", 1],
-                ["あかね", "テーブル", "0,0", "2,1", 1],
-                ["ソファ", "柴犬", "0,-Infinity", "2,1", 1],
-                ["イス", "豚骨ラーメン", "0,0", "2,1", 1],
-                ["黒", "れい", "0,-Infinity", "2,1", 1],
-                ["紀州犬", "タンス", "2,2", "1,1", 1],
-                ["ゆうり", "醤油ラーメン", "1,2", "1,2", 1],
-                ["塩ラーメン", "秋田犬", "1,2", "0,1", 1],
-                ["まお", "白", "1,2", "1,2", 1],
-                ["甲斐犬", "味噌ラーメン", "0,2", "2,1", 1]
+                ["茶色", "緑", "0,-Infinity", "2,1", 0],
+                ["あかね", "テーブル", "0,0", "2,1", 0],
+                ["ソファ", "柴犬", "0,-Infinity", "2,1", 0],
+                ["イス", "豚骨ラーメン", "0,0", "2,1", 0],
+                ["黒", "れい", "0,-Infinity", "2,1", 0],
+                ["紀州犬", "タンス", "2,2", "1,1", 0],
+                ["ゆうり", "醤油ラーメン", "1,2", "1,2", 0],
+                ["塩ラーメン", "秋田犬", "1,2", "0,1", 0],
+                ["まお", "白", "1,2", "1,2", 0],
+                ["甲斐犬", "味噌ラーメン", "0,2", "2,1", 0]
                
 
             ]
