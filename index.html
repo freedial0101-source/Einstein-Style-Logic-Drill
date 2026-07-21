@@ -9,36 +9,84 @@
 </head>
 
 <body>
-    <input type="submit" value="問題 6" id="problem6-submit">
-    <input type="submit" value="問題 41" id="problem41-submit">
-    <div>
-        <p>特徴の種類を書いてください。
-            <br>それぞれの語句の間は「、」で区切ってください
-            <br>(入力後は「Tab」を押すか、下の入力欄をクリック)
-        </p>
-        <input class="input-wide" id="types-input" placeholder="(例)名前、好きな木、出身地、買った家電">
+    <div class="wrapping-big">
+        <div class="wrapping">
+            <h1>アインシュタイン式論理脳ドリルを解くプログラム！</h1>
+        </div>
+    </div>
+    <h2>・パズルの説明</h2>
+    <div class="wrapping-big">
 
+
+        <div class="wrapping">
+            <h3>アインシュタイン式論理脳ドリルとは？</h3>
+            <p>・ヒントを見ながら並び順と誰がどの特徴を持つかの表を完成させる論理パズルです。</p>
+            <h3>本ページの使い方</h3>
+            <p>
+                ・まずはサンプルのボタンと「問題を解く」ボタンを押して、どうなるかを確認するのをオススメします。<br>
+                ・「1.特徴の種類の入力」「2.名前と特徴のリストの作成」「3.ヒントの作成」の順に入力してください。
+            </p>
+        </div>
     </div>
 
-
-    <p>名前と特徴のリストを作ってください</p>
-    <div id="featureLists-div">
-
     </div>
-    <input type="submit" value="特徴を記入しました" id="features-check">
+    <h2>・パズルを解くプログラム</h2>
+    <div class="wrapping-big">
 
-    <div>
-        <input type="submit" value="条件欄を増やす" id="add-condition">
-        <input type="submit" value="条件欄を減らす" id="remove-condition">
-        <ol id="conditions-div">
+        <div class="wrapping sample-div">
+            <p>ボタンを押すとヒントまでが埋まります。さらに「問題を解く」ボタンを押せば、答えの表が出ます。</p>
+            <ul>
+                <li><input type="button" value="問題例 6" id="problem6-button"></li>
 
-        </ol>
-    </div>
-    <input type="submit" value="問題を解く" id="solution-getter">
-    <div id="result-div">
-        <p class="result-teller" id="result-teller"></p>
-        <p class="result-teller-sub" id="result-teller-sub"></p>
-        <table id="result-table" class="none"></table>
+                <li><input type="button" value="問題例 27" id="problem27-button">
+                    :ヒントに「～ではない」の含まれた例です。</li>
+                <!-- <li><input type="button" value="問題例 30" id="problem30-button">
+                    :ヒントに「左端から」、「右端から」が含まれた例です。</li> -->
+                <li><input type="button" value="問題例 41" id="problem41-button">
+                    :ヒントに「～より左」、「～より右」の含まれた例です。</li>
+
+            </ul>
+
+            <p>（各問題は『脳激！アインシュタイン式論理脳ドリル』（アインシュタイン研究会 著、東邦出版）から引用しています。）</p>
+
+        </div>
+        <div class="wrapping">
+            <p>特徴の種類を書いてください。
+                <br>それぞれの語句の間は「、」で区切ってください。
+                <br>(入力後は「Tab」を押すか、下の入力欄をクリック)
+            </p>
+            <input class="input-wide" id="types-input" placeholder="(例)名前、好きな木、出身地、買った家電">
+
+        </div>
+
+
+
+        <div id="featureLists-div" class="wrapping">
+            <p>名前と特徴のリストを作ってください</p>
+            <ul id="featureLiss-ul">
+
+            </ul>
+
+
+        </div>
+        <input type="button" value="特徴を記入しました" class="features-check" id="features-check">
+        <div class="wrapping">
+            <p>ヒントを作成してください</p>
+            <input type="button" value="ヒント欄を増やす" id="add-condition">
+            <input type="button" value="ヒント欄を減らす" id="remove-condition">
+            <ol id="conditions-div">
+
+            </ol>
+        </div>
+        <div class="wrapping">
+            <p class="explaining-solution-getter">ヒントを全て作ったら、下のボタンを押してください</p>
+            <input type="button" value="問題を解く" id="solution-getter" class="solution-getter">
+        </div>
+        <div id="result-div" class="wrapping">
+            <p class="result-teller" id="result-teller"></p>
+            <p class="result-teller-sub" id="result-teller-sub"></p>
+            <table id="result-table" class="none"></table>
+        </div>
     </div>
     <script>
 
@@ -46,16 +94,16 @@
         //後で書き替えが容易な値
         const maxHumansNum = 7;
         const maxTypesNum = 6;
-        const maxConditionNum = 15;
-
+        const maxConditionNum = 20;
 
 
         //特徴の種類のinputの取得
-        const typesInput = document.getElementById("types-input");
+        const typesInput = document.querySelector("#types-input");
 
 
         // 特徴の種類のinputを参照して入力欄を作る
         const featureWritingDivs = [];
+
         const types = [];
         const featuresInputs = [];
         const featureListsDiv = document.querySelector("#featureLists-div");
@@ -66,6 +114,7 @@
             const featureWritingDiv = document.createElement("div");
             featureListsDiv.appendChild(featureWritingDiv);
             featureWritingDivs[i] = featureWritingDiv;
+            featureWritingDiv.classList.add("none");
 
             const type = document.createElement("p");
             type.classList.add("type");
@@ -128,8 +177,12 @@
         let truths = [];
 
         let conditionNum = 4;
+
         // ↑表示番号
         let directionOptions = [];
+
+
+
 
         for (let i = 0; i < maxConditionNum; i++) {
 
@@ -148,19 +201,19 @@
             select1s[i] = select1;
             li.appendChild(select1);
 
-            const supplement1 = document.createElement("span");
-            supplement1.id = `supplement1-${i}`;
+            const supplement1 = document.createElement("p");
             supplement1.textContent = "は";
             supplement1s[i] = supplement1;
             li.appendChild(supplement1);
+            supplement1.classList.add("supplement");
 
             const select2 = document.createElement("select");
             select2.id = `select2-${i}`;
             select2s[i] = select2;
             li.appendChild(select2);
 
-            const supplement2 = document.createElement("span");
-            supplement2.id = `supplement2-${i}`;
+            const supplement2 = document.createElement("p");
+            supplement2.classList.add("supplement");
             supplement2.textContent = "";
             supplement2s[i] = supplement2;
             li.appendChild(supplement2);
@@ -177,6 +230,7 @@
             direction.id = `direction-${i}`;
             directions[i] = direction;
             li.appendChild(direction);
+            direction.classList.add("direction");
 
             directionOptions[i] = [];
             const option0 = document.createElement("option");
@@ -203,23 +257,28 @@
             direction.appendChild(option3);
             directionOptions[i][3] = option3;
 
-            const supplement3 = document.createElement("span");
+            const supplement3 = document.createElement("p");
 
-            supplement3.textContent = "ではない";
+            supplement3.textContent = "である";
             supplement3s[i] = supplement3;
-
-            supplement3.classList.add("none");
+            supplement3.classList.add("supplement-truth");
             li.appendChild(supplement3);
             truths[i] = 1;
 
             const btn = document.createElement("input");
-            btn.type = "submit";
+            btn.type = "button";
 
             btn.value = "真偽を変える";
             negativeBtns[i] = btn;
             li.appendChild(btn);
 
         }
+
+
+
+
+
+
 
 
         const trs = [];
@@ -248,8 +307,9 @@
             featuresMatrix = [];
             //一度リセットするためのもの
 
-            featuresInputs.forEach(x => {
-                if (x.value !== "undefined") { featuresMatrix.push(x.value.split("、")); }
+            featuresInputs.forEach((x, index) => {
+                if (index < typesArr.length && x.value !== "undefined" && x.value !== "") { featuresMatrix.push(x.value.split("、")); }
+                //x.valueは 記入ナシなら""、問題例を押したときの空欄はundfinedになる
             }
             )
 
@@ -278,22 +338,29 @@
                     option.textContent = y;
                     a.appendChild(option);
                 }))
+                a.insertAdjacentHTML("beforeend", `<option value="${(featuresMatrix[0].length - 1) / 2},-1,1">右端から</option>`);
+                a.insertAdjacentHTML("beforeend", `<option value="${(featuresMatrix[0].length - 1) / 2},1,1">左端から</option>`);
+                a.insertAdjacentHTML("beforeend", `<option value="${(featuresMatrix[0].length - 1) / 2},1,2">端から</option>`);
+
             });
-
-
+            // console.log("featuresMatrix.length:" + featuresMatrix.length);
+            // console.log("featuresMatrix[0].length:" + featuresMatrix[0].length);
+            // console.log("featuresMatrix[0].length:" + featuresMatrix[0][0].length);
 
             ranges.forEach(x => {
                 x.innerHTML = "";
 
                 for (let i = 0; i < featuresMatrix[0].length; i++) {
                     const option = document.createElement("option");
-                    option.value = `${i},2`;
-                    option.textContent = i === 0 ? "である" : `の${i}つ`;
+                    option.value = `${i},2,1`;
+                    option.textContent = i === 0 ? "" : `の${i}つ`;
                     x.appendChild(option);
                 }
-
-                x.insertAdjacentHTML("beforeend", "<option value=\"0,-Infinity\">より左</option>");
-                x.insertAdjacentHTML("beforeend", "<option value=\"0,0\">より右</option>");
+                for (let i = 1; i <= featuresMatrix[0].length; i++) {
+                    x.insertAdjacentHTML("beforeend", `<option value="${(featuresMatrix[0].length - 1) / 2 - i},2,0">${i}番目</option>`)
+                }
+                x.insertAdjacentHTML("beforeend", "<option value='0,-Infinity,1'>より左</option>");
+                x.insertAdjacentHTML("beforeend", "<option value='0,0,1'>より右</option>");
             })
         });
 
@@ -319,14 +386,22 @@
         }))
 
         select2s.forEach((x, index) => x.addEventListener("change", () => {
-            supplement2s[index].textContent = supplementInputs[featuresMatrix.findIndex(y => y.includes(x.value))].value
+            supplement2s[index].textContent = featuresMatrix.findIndex(y => y.includes(x.value)) !== -1 ? supplementInputs[featuresMatrix.findIndex(y => y.includes(x.value))].value : ""
         }))
 
         negativeBtns.forEach((x, index) => x.addEventListener("click", () => {
-            supplement3s[index].classList.toggle("none",truths[index]===0)  ;
-            truths[index]===0? truths[index]++ : truths[index]--;
-            console.log(truths[index]);
-}));
+
+            if (truths[index] === 0) {
+                truths[index]++;
+                supplement3s[index].textContent = "である";
+                supplement3s[index].style.color = "black";
+            } else {
+                truths[index]--;
+                supplement3s[index].textContent = "ではない";
+                supplement3s[index].style.color = "red";
+            }
+
+        }));
 
 
         const solutionGetter = document.querySelector("#solution-getter");
@@ -342,20 +417,30 @@
 
         let trueDirectionValues = [];
         let trueRangeValues = [];
-
+        let parts0 = [];
+        let parts1 = [];
         function getPartsOfConditions() {
-
+            parts0 = [];
+            parts1 = [];
             trueRangeValues = ranges.map(ele => ((ele.value).split(',')).map(Number));
-            trueDirectionValues = directions.map(ele => ((ele.value).split(',')).map(Number));
 
-            let partsOfConditions = [];
+
             for (let i = 0; i <= conditionNum; i++) {
-                partsOfConditions[i] = [select1s[i].value, select2s[i].value, trueRangeValues[i], trueDirectionValues[i]];
-            }
+                if (trueRangeValues[i][2] === 0) {
+                    parts0.push([select1s[i].value, select2s[i].value, trueRangeValues[i]]);
+                }
+                else {
 
+                    trueDirectionValues = directions.map(ele => ((ele.value).split(',')).map(Number));
+                    parts1.push([select1s[i].value, select2s[i].value, trueRangeValues[i], trueDirectionValues[i]])
+
+                }
+
+            }
+            console.log("parts0:" + parts0);
             // partsOfConditions[5].forEach((x, index) => console.log(`${index}番目は${x}で、種類は${typeof x}`));
             // partsOfConditions[5][3].forEach((x, index) => console.log(`オブジェクトの中身その${index}は${x}で、種類は${typeof x}`));
-            return partsOfConditions;
+
         }
 
 
@@ -369,12 +454,35 @@
         // r[0]は単に距離。
         // d[1]=2なら、絶対値の代わりになるのを利用（隣を表すのに利用）。
         // d[0]の偶奇でxとyのどちらが大きいかを表すのに利用（どちらが右にあるかを表すのに利用）。
+        const getChecker0 = (r, x, y) => {
+            const trueY = (y.split(',')).map(Number);
+            return y[1] * (x - trueY[0]) ** y[2] === r[0] ** y[2];
+        }
+        const getCondition0 = (word1, word2, range) => (arr1) => {
+            const position1 = searchIndex0(arr1, word1);
+            if (position1 === -1) {
+                console.log("word1:" + word1);
+                console.log("arr1:" + arr1);
+                console.log("word1はありませんでした");
+                return true;
+            } else {
+                console.log(range, position1, word2);
+                return getChecker0(range, position1, word2);
+            }
+        }
 
-        const getChecker = (r, d, n, x, y) =>
+        const getAllChecker0 = (conditionsArr) => (arr1) => {
+            return conditionsArr.every(condition => condition(arr1));
+        }
+
+
+        const getChecker1 = (r, d, n, x, y) =>
             0 ** (((x - y) ** d[1] + (-1) ** d[0] * r[0] ** d[1]) ** (2 - n)) === Math.abs(Math.min(n, r[1]));
 
 
-        const LightCheckers = [];
+
+
+
 
 
         // 一次配列から各要素を１つだけもつ配列の全順列を作る([a,b]から[[[a],[b]],[[b],[a]]]を作る) 
@@ -405,27 +513,38 @@
 
 
         //二次配列に含まれる語句は何番目にあるか
-        function searchIndex(arr, word) {
+        function searchIndex0(arr, word) {
+            return arr.findIndex(x => x.some(y => y.includes(word)));
+        }
+
+        function searchIndex1(arr, word) {
             return arr.findIndex(x => x.includes(word));
         }
 
+        // console.log(searchIndex([[["a"],["b"]],[["c"],["d"]]],"a"));
 
         // searchIndexを使って、問題データから2つの配列が条件を満たすか
-        const getCondition = (word1, word2, range, direction, truth) => (arr1, arr2) => {
+        const getCondition1 = (word1, word2, range, direction, truth) => (arr1, arr2) => {
+            const position1 = Math.max(searchIndex1(arr1, word1), searchIndex1(arr2, word1));
+            // if(range[2]===0){
 
-            const position1 = Math.max(searchIndex(arr1, word1), searchIndex(arr2, word1));
-            const position2 = Math.max(searchIndex(arr1, word2), searchIndex(arr2, word2));
+            const position2 = Math.max(searchIndex1(arr1, word2), searchIndex1(arr2, word2));
             // typeof word2 == "number" ? word2 : 
             // console.log(`i:${i},word1:${searchIndex(arr1, word1)}or${searchIndex(arr2,word1)},word2:${searchIndex(arr1, word2)}or${searchIndex(arr2,word2)}`)
 
             if (Math.min(position1, position2) === -1) {
                 return true;
             } else {
-                return getChecker(range, direction, truth, position1, position2);
+                return getChecker1(range, direction, truth, position1, position2);
             }
+            // }
+
+            // if(range[0]===1){
+            //     return getChecker2(range,direction,truth,position1,arr2)
+            // }
         };
 
-        const getAllChecker = (conditionsArr) => (arr1, arr2) => {
+        const getAllChecker1 = (conditionsArr) => (arr1, arr2) => {
             return conditionsArr.every(condition => condition(arr1, arr2));
         }
 
@@ -451,16 +570,17 @@
         };
 
         //すべての部分集合から条件が合うものを連結(答えを出す)
-        function getResult(problemDate, condition) {
+        function getResult(problemData, condition0, condition1) {
             const featuresPMatrix = [];
 
-            problemDate[1].forEach((x, index) => {
+            problemData[1].forEach((x, index) => {
 
                 featuresPMatrix[index] = getPermutations(x);
             })
+            const validFeaturesPMatrix = featuresPMatrix.filter(x => condition0(x));
             // console.log(featuresPMatrix);
             //(1)の部分
-            return featuresPMatrix.reduce((acc, cur) => acc !== 0 ? makeProduction(acc, cur, condition) : cur, 0);
+            return validFeaturesPMatrix.reduce((acc, cur) => acc !== 0 ? makeProduction(acc, cur, condition1) : cur, 0);
         };
 
 
@@ -481,10 +601,7 @@
                 }
             }
 
-            let resultText = "※計算しています";
-            let resultTextSub = "";
-            resultTeller.textContent = resultText;
-            resultTellerSub.textContent = resultTextSub;
+
             resultTable.scrollIntoView({
                 behavior: "smooth", // 動きを滑らかにする
                 block: "center"      // 画面のどの位置に合わせるか（start = 画面の一番上）
@@ -492,41 +609,42 @@
 
 
 
-            const problemDate = [typesInput.value,
+            const problemData = [typesInput.value,
                 featuresMatrix,
                 ,
                 ,
             ];
-            console.log("↓problemDate") +
-                problemDate.forEach((x, index) => console.log(index + ":" + x));
-            console.log(featuresMatrix);
 
-            const parts = getPartsOfConditions();
+
+
+            getPartsOfConditions();
             // console.log("↓条件の部品");
-            // console.log(parts);
-            const checkConditions = parts.map((cur, index) => {
 
-                return getCondition(...cur, truths[index])
-            });
+
+            const checkConditions0 = parts0.map(arr => getCondition0(...arr));
+
+            const checkConditions1 = parts1.map((arr, index) => getCondition1(...arr, truths[index]));
 
             // console.log(checkConditions);
 
 
 
+            const check0All = getAllChecker0(checkConditions0);
+            const check1All = getAllChecker1(checkConditions1);
 
-            const checkAll = getAllChecker(checkConditions);
+
+            const result = getResult(problemData, check0All, check1All);
 
 
-            const result = getResult(problemDate, checkAll);
-
-            console.log(`result[0]=${result[0]}`);
 
             if (result[0]) {
                 result[0].forEach((x, i) => x.forEach((y, j) => tds[j + 1][i + 1].textContent = y));
             }
-            // console.log(trueDirectionValues[5], trueRangeValues[5]);
+
             console.log(`答えは${result.length}通り`);
-            result.forEach(x => console.log(x));
+            if (result.length > 0) {
+                result.forEach(x => console.log(x));
+            }
 
 
 
@@ -570,53 +688,114 @@
             supplementInputs.forEach((x, index) => x.value = problemData[2][index]);
             typesInput.dispatchEvent(new Event("change"));
             featuresCheck.dispatchEvent(new Event("click"));
-            
+
 
 
 
             writeCondition(problemData[3]);
             select1s.forEach(x => x.dispatchEvent(new Event("change")));
             select2s.forEach(x => x.dispatchEvent(new Event("change")));
-            problemData[3].forEach((x,index)=>truths[index]=x[4]);
-            console.log(problemData[3]);
+            problemData[3].forEach((x, index) => truths[index] = x[4]);
+
             negativeBtns.forEach(x => x.dispatchEvent(new Event("click")));
-            console.log(problemData[3]);
+
 
         }
 
 
 
 
-        const problem6Submit = document.querySelector("#problem6-submit");
+        const problem6Button = document.querySelector("#problem6-button");
 
-        problem6Submit.addEventListener("click", () => {
-            getSampleProblem(problemDates.xi);
+        problem6Button.addEventListener("click", () => {
+            getSampleProblem(problemDatas.xi);
 
         });
+        const problem27Button = document.querySelector("#problem27-button");
 
-        const problem41Submit = document.querySelector("#problem41-submit");
+        problem27Button.addEventListener("click", () => {
+            getSampleProblem(problemDatas.xxvii);
+        });
 
-        problem41Submit.addEventListener("click", () => {
-            getSampleProblem(problemDates.xli);
+
+        // const problem30Button = document.querySelector("#problem30-button");
+        // problem30Button.addEventListener("click", () => {
+        //     getSampleProblem(problemDatas.xxx);
+        // });
+
+        const problem41Button = document.querySelector("#problem41-button");
+
+        problem41Button.addEventListener("click", () => {
+            getSampleProblem(problemDatas.xli);
         });
 
         //サンプルデータ 
-        const problemDates = {};
-        problemDates.xi = [
+        const problemDatas = {};
+        // problemDatas.xi=[
+        //     "名前、苗字",
+        //     ["たろう、じろう",
+        //         "たなか、さとう"],
+        //     ["",""],
+        //    [ ["たろう","0.5,-1,1","-0.5,2,0","2,1",0],
+        //     ["たなか","0.5,1,1","-0.5,2,0","2,1",0]]
+        // ]
+        problemDatas.xi = [
             "名前、好きな伝説の生き物、買った宝石",
             ["よしえ、もえ、さやか、まこと",
                 "玄武、朱雀、白虎、青龍",
                 "オパール、トパーズ、ルビー、ダイヤ"],
             ["", "好き", "を買った人"],
-            [["よしえ", "玄武", "1,2", "1,2", 0],
-            ["朱雀", "オパール", "1,2", "1,1", 0],
-            ["白虎", "トパーズ", "3,2", "1,2", 0],
-            ["もえ", "ルビー", "0,2", "2,1", 0],
-            ["さやか", "ダイヤ", "3,2", "1,2", 0],
-            ["まこと", "青龍", "0,2", "2,1", 0]
+            [["よしえ", "玄武", "1,2,1", "1,2", 0],
+            ["朱雀", "オパール", "1,2,1", "1,1", 0],
+            ["白虎", "トパーズ", "3,2,1", "1,2", 0],
+            ["もえ", "ルビー", "0,2,1", "2,1", 0],
+            ["さやか", "ダイヤ", "3,2,1", "1,2", 0],
+            ["まこと", "青龍", "0,2,1", "2,1", 0]
             ]
         ];
-        problemDates.xli = [
+        problemDatas.xxvii = [
+            "名前、好きなカレー、柔道の帯の色",
+            ["ひろし、さぶろう、こうへい、はじめ、ゆうや",
+                "ポークカレー、野菜カレー、ドライカレー、チキンカレー、ビーフカレー",
+                "黒、白、茶、橙、紫"
+            ],
+            ["", "好き", "帯の人"],
+            [["ポークカレー", "黒", "0,2,1", "2,1", 0],
+            ["白", "ひろし", "2,2,1", "0,1", 0],
+            ["茶", "野菜カレー", "0,2,1", "2,1", 1],
+            ["さぶろう", "ドライカレー", "2,2,1", "0,1", 0],
+            ["チキンカレー", "こうへい", "1,2,1", "0,1", 0],
+            ["茶", "ビーフカレー", "2,2,1", "0,1", 0],
+            ["白", "チキンカレー", "0,2,1", "2,1", 1],
+            ["はじめ", "橙", "2,2,1", "1,1", 0],
+            ["ゆうや", "紫", "0,2,1", "2,1", 0],
+            ]
+        ];
+
+        problemDatas.xxx = [
+            "名前、好きな祝日、買った焼き物、特異なダンス",
+            ["ゆうか、さおり、ともみ、ちか",
+                "敬老の日、成人の日、体育の日、文化の日",
+                "陶器、土器、磁器、烙器",
+                "メレンゲ、タンゴ、サルサ、ルンバ"],
+            ["", "好き", "を買った人", "が得意な人"],
+            [["陶器", "土器", "1,2,1", "1,1", 0],
+            ["敬老の日", "2,1,1", "0,2,0", "2,1", 0],
+            ["メレンゲ", "タンゴ", "1,2,1", "1,1", 0],
+            ["ゆうか", "成人の日", "0,2,1", "2,1", 0],
+            ["サルサ", "2,1,1", "1,2,0", "2,1", 0],
+            ["さおり", "磁器", "0,2,1", "2,1", 0],
+            ["体育の日", "ともみ", "0,0,1", "2,1", 0],
+            ["烙器", "2,-1,1", "1,2,1", "2,1", 0],
+            ["ルンバ", "陶器", "1,2,1", "1,1", 0],
+            ["ちか", "メレンゲ", "0,2,1", "2,1", 0]
+
+            ]
+
+
+        ]
+
+        problemDatas.xli = [
             "名前、好きな日本犬、買った家具、食べたラーメン、髪の色",
 
             ["あかね、れい、ゆうり、まお",
@@ -625,30 +804,23 @@
                 "豚骨ラーメン、醤油ラーメン、塩ラーメン、味噌ラーメン",
                 "茶色、緑、黒、白"],
 
-            ["", "好き", "を買った人", "を食べた人","の髪の人"],
+            ["", "好き", "を買った人", "を食べた人", "の髪の人"],
 
             [
-                ["茶色", "緑", "0,-Infinity", "2,1", 0],
-                ["あかね", "テーブル", "0,0", "2,1", 0],
-                ["ソファ", "柴犬", "0,-Infinity", "2,1", 0],
-                ["イス", "豚骨ラーメン", "0,0", "2,1", 0],
-                ["黒", "れい", "0,-Infinity", "2,1", 0],
-                ["紀州犬", "タンス", "2,2", "1,1", 0],
-                ["ゆうり", "醤油ラーメン", "1,2", "1,2", 0],
-                ["塩ラーメン", "秋田犬", "1,2", "0,1", 0],
-                ["まお", "白", "1,2", "1,2", 0],
-                ["甲斐犬", "味噌ラーメン", "0,2", "2,1", 0]
-               
+                ["茶色", "緑", "0,-Infinity,1", "2,1", 0],
+                ["あかね", "テーブル", "0,0,1", "2,1", 0],
+                ["ソファ", "柴犬", "0,-Infinity,1", "2,1", 0],
+                ["イス", "豚骨ラーメン", "0,0,1", "2,1", 0],
+                ["黒", "れい", "0,-Infinity,1", "2,1", 0],
+                ["紀州犬", "タンス", "2,2,1", "1,1", 0],
+                ["ゆうり", "醤油ラーメン", "1,2,1", "1,2", 0],
+                ["塩ラーメン", "秋田犬", "1,2,1", "0,1", 0],
+                ["まお", "白", "1,2,1", "1,2", 0],
+                ["甲斐犬", "味噌ラーメン", "0,2,1", "2,1", 0]
+
 
             ]
         ];
-
-
-        // problemDates.
-
-        // problem6Submit.dispatchEvent(new Event("click"));
-        // solutionGetter.dispatchEvent(new Event("click"));
-
 
 
     </script>
