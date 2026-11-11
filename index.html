@@ -456,7 +456,7 @@
         // d[0]の偶奇でxとyのどちらが大きいかを表すのに利用（どちらが右にあるかを表すのに利用）。
         const getChecker0 = (r, x, y) => {
             const trueY = (y.split(',')).map(Number);
-            return y[1] * (x - trueY[0]) ** y[2] === r[0] ** y[2];
+            return trueY[1] * (x - trueY[0]) ** y[2] === r[0] ** y[2];
         }
         const getCondition0 = (word1, word2, range) => (arr1) => {
             const position1 = searchIndex0(arr1, word1);
